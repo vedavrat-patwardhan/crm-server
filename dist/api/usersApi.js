@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const usersController_1 = require("../controller/usersController");
+const isAuth_1 = require("../middleware/isAuth");
+const usersRouter = (0, express_1.Router)();
+usersRouter.post("/create-user", isAuth_1.jwtAuth, usersController_1.createUser);
+usersRouter.get("/users/:itemsPerPage/:page", isAuth_1.jwtAuth, usersController_1.getUserData);
+usersRouter.get("/users-list", isAuth_1.jwtAuth, usersController_1.getUserList);
+usersRouter.patch("/update-user/:id", isAuth_1.jwtAuth, usersController_1.updateUser);
+usersRouter.delete("/delete-user/:id", isAuth_1.jwtAuth, usersController_1.deleteUser);
+exports.default = usersRouter;
