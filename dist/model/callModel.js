@@ -6,7 +6,7 @@ const companyModel_1 = require("./companyModel");
 const signupModel_1 = require("./signupModel");
 const actionSchema = new mongoose_1.Schema({
     actionTaken: { type: String, required: true },
-    actionStarted: { type: String, required: true },
+    actionStarted: { type: Number, required: true },
     employee: { type: mongoose_1.Schema.Types.ObjectId, ref: signupModel_1.signupModel, required: true },
 });
 const callSchema = new mongoose_1.Schema({
@@ -30,12 +30,11 @@ const callSchema = new mongoose_1.Schema({
         required: true,
     },
     callStatus: { type: String, required: true },
-    startDate: { type: String, required: true },
-    endDate: String,
+    startDate: { type: Number, required: true },
+    endDate: Number,
     startAction: String,
-    endAction: String,
     problemType: { type: String, required: true },
-    expClosure: { type: String, required: true },
+    expClosure: { type: Number, required: true },
     actions: [actionSchema],
 });
 exports.callModel = (0, mongoose_1.model)("call", callSchema);

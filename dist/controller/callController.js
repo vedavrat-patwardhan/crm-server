@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.companyReport = exports.addAction = exports.deleteCall = exports.updateCall = exports.createCall = exports.getCalls = void 0;
+exports.addData = exports.employeeReport = exports.companyReport = exports.addAction = exports.deleteCall = exports.updateCall = exports.createCall = exports.getCalls = void 0;
 const express_validator_1 = require("express-validator");
 const callModel_1 = require("../model/callModel");
 const signupModel_1 = require("../model/signupModel");
@@ -86,6 +86,7 @@ const createCall = (req, res) => {
             res.status(201).json("Call created");
         })
             .catch((err) => {
+            console.log(err);
             res.status(400).json(err);
         });
     })
@@ -144,7 +145,7 @@ const addAction = (req, res) => {
         result.assignedEmployeeId = req.body.employee;
         if (req.body.complete) {
             result.callStatus = "Completed";
-            result.endDate = new Date().toLocaleDateString("en-us");
+            result.endDate = new Date().getTime();
         }
         else {
             result.callStatus = "In Progress";
@@ -164,7 +165,28 @@ const addAction = (req, res) => {
 exports.addAction = addAction;
 const companyReport = (req, res) => {
     const { companyId, startDate, endDate } = req.params;
-    callModel_1.callModel.find({ companyName: companyId }, (err, foundCalls) => {
+    callModel_1.callModel.find({
+        callStatus: "Completed",
+    }, (err, foundCalls) => {
+        if (err) {
+            res.status(400).json(err);
+        }
+        else if (foundCalls) {
+            const filteredCalls = foundCalls.filter((call) => call.companyName &&
+                call.companyName.toString() === companyId &&
+                call.endDate <= +endDate &&
+                call.startDate >= +startDate);
+            res.status(200).json(filteredCalls);
+        }
+        else {
+            res.status(404).json("Company not found");
+        }
+    });
+};
+exports.companyReport = companyReport;
+const employeeReport = (req, res) => {
+    const { employeeId, startDate, endDate } = req.params;
+    callModel_1.callModel.find({ assignedEmployeeId: employeeId }, (err, foundCalls) => {
         if (err) {
             res.status(400).json(err);
         }
@@ -175,8 +197,19 @@ const companyReport = (req, res) => {
             res.status(200).json(filteredCalls);
         }
         else {
-            res.status(404).json("Company not found");
+            res.status(404).json("User not found");
         }
     });
 };
-exports.companyReport = companyReport;
+exports.employeeReport = employeeReport;
+const addData = (req, res) => {
+    callModel_1.callModel.collection.insertMany(req.body, (err, result) => {
+        if (err) {
+            return res.status(400).json(err);
+        }
+        else {
+            res.status(200).json("Calls added");
+        }
+    });
+};
+exports.addData = addData;

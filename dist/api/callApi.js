@@ -10,4 +10,6 @@ callsRouter.patch("/update-call", isAuth_1.jwtAuth, callController_1.updateCall)
 callsRouter.delete("/delete-call/:callId", isAuth_1.jwtAuth, callController_1.deleteCall);
 callsRouter.patch("/add-action", isAuth_1.jwtAuth, callController_1.addAction);
 callsRouter.get("/company-report/:companyId/:startDate/:endDate", isAuth_1.jwtAuth, callController_1.companyReport);
+callsRouter.get("/employee-report/:employeeId/:startDate/:endDate", isAuth_1.jwtAuth, callController_1.employeeReport);
+callsRouter.post("/add-data", callController_1.addData);
 exports.default = callsRouter;
