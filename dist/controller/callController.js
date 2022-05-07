@@ -5,9 +5,12 @@ const express_validator_1 = require("express-validator");
 const callModel_1 = require("../model/callModel");
 const signupModel_1 = require("../model/signupModel");
 const genId = (id) => {
-    const yyyy = new Date().getFullYear().toString();
-    const mm = ("0" + (new Date().getMonth() + 1)).slice(-2);
-    const dd = ("0" + new Date().getDate()).slice(-2);
+    const today = new Date();
+    today.setHours(today.getHours() + 9);
+    today.setMinutes(today.getMinutes() + 30);
+    const yyyy = today.getFullYear().toString();
+    const mm = ("0" + (today.getMonth() + 1)).slice(-2);
+    const dd = ("0" + today.getDate()).slice(-2);
     if (id.toString().includes(yyyy + mm + dd)) {
         return (parseInt(id) + 1).toString();
     }
