@@ -23,7 +23,11 @@ const callSchema = new mongoose_1.Schema({
     },
     email: String,
     mobile: [String],
-    assignedEmployeeId: { type: mongoose_1.Schema.Types.ObjectId, ref: signupModel_1.signupModel },
+    assignedEmployeeId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: signupModel_1.signupModel,
+        required: true,
+    },
     registeredBy: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: signupModel_1.signupModel,

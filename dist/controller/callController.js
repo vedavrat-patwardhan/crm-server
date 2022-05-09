@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addData = exports.employeeReport = exports.companyReport = exports.addAction = exports.deleteCall = exports.updateCall = exports.createCall = exports.getCalls = void 0;
+exports.employeeReport = exports.companyReport = exports.addAction = exports.deleteCall = exports.updateCall = exports.createCall = exports.getCalls = void 0;
 const express_validator_1 = require("express-validator");
 const callModel_1 = require("../model/callModel");
 const signupModel_1 = require("../model/signupModel");
@@ -19,35 +19,71 @@ const genId = (id) => {
     }
 };
 let callCounter;
-const getCall = (find, page, itemsPerPage, res) => {
-    callModel_1.callModel
-        .find({
-        ...find,
-        callStatus: { $ne: "Completed" },
-    })
-        .count()
-        .then((callCount) => {
-        callCounter = callCount;
+const getCall = (find, filterData) => {
+    if (filterData.search || filterData.filters) {
         return callModel_1.callModel
             .find({
             ...find,
             callStatus: { $ne: "Completed" },
         })
             .sort({ id: -1 })
-            .skip((+page - 1) * +itemsPerPage)
-            .limit(+itemsPerPage)
             .populate("assignedEmployeeId", "name")
             .populate("registeredBy", "name")
             .populate("companyName", "name")
-            .populate("actions.employee", "name");
-    })
-        .then((result) => res.status(200).json({ calls: result, totalCalls: callCounter }))
-        .catch((error) => {
-        res.status(400).json(error);
-    });
+            .populate("actions.employee", "name")
+            .then((calls) => {
+            const filteredData = calls.filter((call) => {
+                return (call.startDate > +filterData.filters &&
+                    (call.id.toString().includes(filterData.search) ||
+                        (call.companyName &&
+                            call.companyName.name
+                                .toLowerCase()
+                                .includes(filterData.search)) ||
+                        call.callStatus.toLowerCase().includes(filterData.search)));
+            });
+            callCounter = filteredData.length;
+            filterData.res.status(200).json({
+                calls: filteredData.slice((+filterData.page - 1) * +filterData.itemsPerPage, +filterData.page * +filterData.itemsPerPage),
+                totalCalls: callCounter,
+            });
+        });
+    }
+    else {
+        callModel_1.callModel
+            .find({
+            ...find,
+            callStatus: { $ne: "Completed" },
+        })
+            .count()
+            .then((callCount) => {
+            callCounter = callCount;
+            return callModel_1.callModel
+                .find({
+                ...find,
+                callStatus: { $ne: "Completed" },
+            })
+                .sort({ id: -1 })
+                .skip((+filterData.page - 1) * +filterData.itemsPerPage)
+                .limit(+filterData.itemsPerPage)
+                .populate("assignedEmployeeId", "name")
+                .populate("registeredBy", "name")
+                .populate("companyName", "name")
+                .populate("actions.employee", "name");
+        })
+            .then((result) => filterData.res
+            .status(200)
+            .json({ calls: result, totalCalls: callCounter }))
+            .catch((error) => {
+            filterData.res.status(400).json(error);
+        });
+    }
 };
 const getCalls = (req, res) => {
     const { page, _id, itemsPerPage } = req.params;
+    let { search, filters } = req.query;
+    search = search || "";
+    filters = filters || "";
+    const filterData = { page, itemsPerPage, res, search, filters };
     signupModel_1.signupModel.findById(_id, { auth: 1, _id: 1 }, (err, foundUser) => {
         const id = foundUser._id;
         if (err) {
@@ -55,13 +91,13 @@ const getCalls = (req, res) => {
         }
         switch (foundUser.auth) {
             case "user":
-                getCall({ assignedEmployeeId: id }, page, itemsPerPage, res);
+                getCall({ assignedEmployeeId: id }, filterData);
                 break;
             case "admin":
-                getCall({ problemType: { $nin: ["Quotation", "Lead"] } }, page, itemsPerPage, res);
+                getCall({ problemType: { $nin: ["Quotation", "Lead"] } }, filterData);
                 break;
             case "sales admin":
-                getCall({ problemType: { $in: ["Quotation", "Lead"] } }, page, itemsPerPage, res);
+                getCall({ problemType: { $in: ["Quotation", "Lead"] } }, filterData);
                 break;
             default:
                 res.status(400).json("Invalid auth");
@@ -89,7 +125,6 @@ const createCall = (req, res) => {
             res.status(201).json("Call created");
         })
             .catch((err) => {
-            console.log(err);
             res.status(400).json(err);
         });
     })
@@ -205,14 +240,3 @@ const employeeReport = (req, res) => {
     });
 };
 exports.employeeReport = employeeReport;
-const addData = (req, res) => {
-    callModel_1.callModel.collection.insertMany(req.body, (err, result) => {
-        if (err) {
-            return res.status(400).json(err);
-        }
-        else {
-            res.status(200).json("Calls added");
-        }
-    });
-};
-exports.addData = addData;
