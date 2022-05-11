@@ -39,7 +39,9 @@ const getCall = (find, filterData) => {
                             call.companyName.name
                                 .toLowerCase()
                                 .includes(filterData.search)) ||
-                        call.callStatus.toLowerCase().includes(filterData.search)));
+                        call.assignedEmployeeId.name
+                            .toLowerCase()
+                            .includes(filterData.search)));
             });
             callCounter = filteredData.length;
             filterData.res.status(200).json({

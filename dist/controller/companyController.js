@@ -1,31 +1,54 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addData = exports.deleteCompany = exports.updateCompany = exports.createCompany = exports.getCompanyData = exports.getCompanyList = exports.getCompanies = void 0;
+exports.deleteCompany = exports.updateCompany = exports.createCompany = exports.getCompanyData = exports.getCompanyList = exports.getCompanies = void 0;
 const express_validator_1 = require("express-validator");
 const companyModel_1 = require("../model/companyModel");
 const getCompanies = (req, res) => {
     const { page, itemsPerPage } = req.params;
+    let { search } = req.query;
+    search = search || "";
     let companyCounter = 0;
     if (isNaN(+page)) {
         res.status(403).json("Invalid page number");
     }
-    companyModel_1.companyModel
-        .find()
-        .count()
-        .then((numCompanies) => {
-        companyCounter = numCompanies;
-        return companyModel_1.companyModel
-            .find()
+    if (search) {
+        companyModel_1.companyModel
+            .find({})
             .sort({ name: 1 })
-            .skip((+page - 1) * +itemsPerPage)
-            .limit(+itemsPerPage);
-    })
-        .then((result) => {
-        res
-            .status(200)
-            .json({ companies: result, totalCompanies: companyCounter });
-    })
-        .catch((err) => res.status(400).json(err));
+            .then((companies) => {
+            const filteredData = companies.filter((company) => {
+                return (company.name.toLowerCase().includes(search.toLowerCase()) ||
+                    company.city.toLowerCase().includes(search.toLowerCase()));
+            });
+            companyCounter = filteredData.length;
+            res.status(200).json({
+                companies: filteredData.slice((+page - 1) * +itemsPerPage, +page * +itemsPerPage),
+                totalCompanies: companyCounter,
+            });
+        })
+            .catch((error) => {
+            res.status(400).json(error);
+        });
+    }
+    else {
+        companyModel_1.companyModel
+            .find()
+            .count()
+            .then((numCompanies) => {
+            companyCounter = numCompanies;
+            return companyModel_1.companyModel
+                .find()
+                .sort({ name: 1 })
+                .skip((+page - 1) * +itemsPerPage)
+                .limit(+itemsPerPage);
+        })
+            .then((result) => {
+            res
+                .status(200)
+                .json({ companies: result, totalCompanies: companyCounter });
+        })
+            .catch((err) => res.status(400).json(err));
+    }
 };
 exports.getCompanies = getCompanies;
 const getCompanyList = (_req, res) => {
@@ -113,14 +136,3 @@ const deleteCompany = (req, res) => {
     });
 };
 exports.deleteCompany = deleteCompany;
-const addData = (req, res) => {
-    companyModel_1.companyModel.collection.insertMany(req.body, (err, result) => {
-        if (err) {
-            return res.status(400).json(err);
-        }
-        else {
-            res.status(200).json("Companies added");
-        }
-    });
-};
-exports.addData = addData;
