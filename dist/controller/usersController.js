@@ -49,24 +49,43 @@ const updateUser = (req, res) => {
 exports.updateUser = updateUser;
 const getUserData = (req, res) => {
     let { page, itemsPerPage } = req.params;
+    let { search } = req.query;
+    search = search || "";
     let usersCounter = 0;
     if (isNaN(+page)) {
         return res.status(403).json("Invalid page number");
     }
-    signupModel_1.signupModel
-        .find()
-        .count()
-        .then((usersCount) => {
-        usersCounter = usersCount;
-        return signupModel_1.signupModel
-            .find({}, { password: 0 })
-            .skip((+page - 1) * +itemsPerPage)
-            .limit(+itemsPerPage);
-    })
-        .then((result) => {
-        res.status(200).json({ users: result, totalUsers: usersCounter });
-    })
-        .catch((err) => res.status(400).json(err));
+    if (search) {
+        signupModel_1.signupModel
+            .find({})
+            .sort({ name: 1 })
+            .then((users) => {
+            usersCounter = users.length;
+            const filteredData = users.filter((user) => {
+                return (user.name.toLowerCase().includes(search.toLowerCase()));
+            });
+            res.status(200).json({
+                users: filteredData.slice((+page - 1) * +itemsPerPage, +page * +itemsPerPage),
+                totalUsers: usersCounter,
+            });
+        });
+    }
+    else {
+        signupModel_1.signupModel
+            .find()
+            .count()
+            .then((usersCount) => {
+            usersCounter = usersCount;
+            return signupModel_1.signupModel
+                .find({}, { password: 0 })
+                .skip((+page - 1) * +itemsPerPage)
+                .limit(+itemsPerPage);
+        })
+            .then((result) => {
+            res.status(200).json({ users: result, totalUsers: usersCounter });
+        })
+            .catch((err) => res.status(400).json(err));
+    }
 };
 exports.getUserData = getUserData;
 const getUserList = (_req, res) => {

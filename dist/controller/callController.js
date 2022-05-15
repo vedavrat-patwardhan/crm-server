@@ -205,13 +205,14 @@ const addAction = (req, res) => {
 exports.addAction = addAction;
 const companyReport = (req, res) => {
     const { companyId, startDate, endDate } = req.params;
-    callModel_1.callModel.find({
+    callModel_1.callModel
+        .find({
         callStatus: "Completed",
-    }, (err, foundCalls) => {
-        if (err) {
-            res.status(400).json(err);
-        }
-        else if (foundCalls) {
+    })
+        .populate("registeredBy", "name")
+        .populate("assignedEmployeeId", "name")
+        .then((foundCalls) => {
+        if (foundCalls) {
             const filteredCalls = foundCalls.filter((call) => call.companyName &&
                 call.companyName.toString() === companyId &&
                 call.endDate <= +endDate &&
@@ -221,24 +222,26 @@ const companyReport = (req, res) => {
         else {
             res.status(404).json("Company not found");
         }
-    });
+    })
+        .catch((err) => res.status(404).json(err));
 };
 exports.companyReport = companyReport;
 const employeeReport = (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
-    callModel_1.callModel.find({ assignedEmployeeId: employeeId }, (err, foundCalls) => {
-        if (err) {
-            res.status(400).json(err);
-        }
-        else if (foundCalls) {
-            const filteredCalls = foundCalls.filter((call) => call.callStatus === "Completed" &&
-                new Date(call.startDate).getTime() >= +startDate &&
+    callModel_1.callModel
+        .find({ assignedEmployeeId: employeeId, callStatus: "Completed" })
+        .populate("registeredBy", "name")
+        .populate("companyName", "name")
+        .then((foundCalls) => {
+        if (foundCalls) {
+            const filteredCalls = foundCalls.filter((call) => new Date(call.startDate).getTime() >= +startDate &&
                 new Date(call.endDate).getTime() <= +endDate);
             res.status(200).json(filteredCalls);
         }
         else {
             res.status(404).json("User not found");
         }
-    });
+    })
+        .catch((err) => res.status(404).json(err));
 };
 exports.employeeReport = employeeReport;
