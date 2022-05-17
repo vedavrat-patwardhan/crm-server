@@ -15,7 +15,7 @@ const callSchema = new mongoose_1.Schema({
     city: { type: String, required: true },
     state: { type: String, required: true },
     pincode: { type: String, required: true },
-    callDescription: { type: String, required: true },
+    callDescription: String,
     contactPerson: String,
     companyName: {
         type: mongoose_1.Schema.Types.ObjectId,
