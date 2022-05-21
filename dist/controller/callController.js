@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.employeeReport = exports.companyReport = exports.addAction = exports.deleteCall = exports.updateCall = exports.createCall = exports.getCalls = void 0;
+exports.employeeReport = exports.companyReport = exports.addAction = exports.deleteCall = exports.updateCall = exports.createAmcCalls = exports.createCall = exports.getCalls = exports.genId = void 0;
 const express_validator_1 = require("express-validator");
 const callModel_1 = require("../model/callModel");
 const signupModel_1 = require("../model/signupModel");
@@ -18,6 +18,7 @@ const genId = (id) => {
         return yyyy + mm + dd + "01";
     }
 };
+exports.genId = genId;
 let callCounter;
 const getCall = (find, filterData) => {
     if (filterData.search || filterData.filters) {
@@ -117,7 +118,7 @@ const createCall = (req, res) => {
     callModel_1.callModel
         .findOne({}, { id: 1 }, { sort: { id: -1 } })
         .then((result) => {
-        const id = genId(result.id);
+        const id = (0, exports.genId)(result.id);
         const newCall = new callModel_1.callModel(req.body);
         newCall.id = id;
         newCall.registeredBy = _id;
@@ -131,7 +132,7 @@ const createCall = (req, res) => {
         });
     })
         .catch(() => {
-        const id = genId("0");
+        const id = (0, exports.genId)("0");
         const newCall = new callModel_1.callModel(req.body);
         newCall.id = id;
         newCall.registeredBy = _id;
@@ -146,6 +147,25 @@ const createCall = (req, res) => {
     });
 };
 exports.createCall = createCall;
+const createAmcCalls = (data) => {
+    callModel_1.callModel
+        .findOne({}, { id: 1 }, { sort: { id: -1 } })
+        .then((result) => {
+        const id = (0, exports.genId)(result.id);
+        const newCall = [];
+        data.forEach((call, index) => {
+            let newCallObj = { ...call };
+            newCallObj.id = +id + index;
+            newCall.push(newCallObj);
+        });
+        callModel_1.callModel.collection.insertMany(newCall, (err, docs) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
+};
+exports.createAmcCalls = createAmcCalls;
 const updateCall = (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {

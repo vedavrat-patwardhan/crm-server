@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCompany = exports.updateCompany = exports.createCompany = exports.getCompanyData = exports.getCompanyList = exports.getCompanies = void 0;
+exports.amcCall = exports.deleteCompany = exports.updateCompany = exports.createCompany = exports.getCompanyData = exports.getCompanyList = exports.getCompanies = void 0;
 const express_validator_1 = require("express-validator");
 const companyModel_1 = require("../model/companyModel");
+const callController_1 = require("./callController");
 const getCompanies = (req, res) => {
     const { page, itemsPerPage } = req.params;
     let { search } = req.query;
@@ -136,3 +137,39 @@ const deleteCompany = (req, res) => {
     });
 };
 exports.deleteCompany = deleteCompany;
+const amcCall = () => {
+    companyModel_1.companyModel.find({}).then((result) => {
+        const day = new Date().getDay();
+        const date = new Date();
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        const week = Math.ceil((new Date().getDate() + new Date(firstDay).getDay()) / 7);
+        const findAmc = result.filter((value) => value.amc.maintain === true &&
+            value.amc.day === day &&
+            (value.amc.week === week || value.amc.week === 0));
+        const amcDate = [];
+        findAmc.forEach((company) => {
+            const data = {
+                streetAddress: company.streetAddress,
+                city: company.city,
+                state: company.state,
+                pincode: company.pincode,
+                callDescription: "AMC Call",
+                companyName: company._id,
+                customerName: company.contactPerson[0].name,
+                email: company.contactPerson[0].email,
+                mobile: company.contactPerson[0].mobile,
+                assignedEmployeeId: company.amc.employee,
+                callStatus: "In progress",
+                startDate: new Date().getTime(),
+                startAction: new Date().getTime(),
+                problemType: "AMC Call",
+                expClosure: date.setDate(date.getDate() + 1),
+                actions: [],
+                registeredBy: "62756f81f05f1f54d235158f",
+            };
+            amcDate.push(data);
+        });
+        (0, callController_1.createAmcCalls)(amcDate);
+    });
+};
+exports.amcCall = amcCall;
