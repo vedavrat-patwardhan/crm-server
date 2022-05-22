@@ -137,7 +137,7 @@ const deleteCompany = (req, res) => {
     });
 };
 exports.deleteCompany = deleteCompany;
-const amcCall = () => {
+const amcCall = (_req, res) => {
     companyModel_1.companyModel.find({}).then((result) => {
         const day = new Date().getDay();
         const date = new Date();
@@ -161,7 +161,7 @@ const amcCall = () => {
                 assignedEmployeeId: company.amc.employee,
                 callStatus: "In progress",
                 startDate: new Date().getTime(),
-                startAction: new Date().getTime(),
+                startAction: new Date().toLocaleString().split(",")[0],
                 problemType: "AMC Call",
                 expClosure: date.setDate(date.getDate() + 1),
                 actions: [],
@@ -169,7 +169,7 @@ const amcCall = () => {
             };
             amcDate.push(data);
         });
-        (0, callController_1.createAmcCalls)(amcDate);
+        (0, callController_1.createAmcCalls)(res, amcDate);
     });
 };
 exports.amcCall = amcCall;

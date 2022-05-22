@@ -147,7 +147,7 @@ const createCall = (req, res) => {
     });
 };
 exports.createCall = createCall;
-const createAmcCalls = (data) => {
+const createAmcCalls = (res, data) => {
     callModel_1.callModel
         .findOne({}, { id: 1 }, { sort: { id: -1 } })
         .then((result) => {
@@ -160,7 +160,10 @@ const createAmcCalls = (data) => {
         });
         callModel_1.callModel.collection.insertMany(newCall, (err, docs) => {
             if (err) {
-                console.log(err);
+                res.status(400).json(err);
+            }
+            else {
+                res.status(201).json("Amc calls added");
             }
         });
     });

@@ -10,4 +10,5 @@ companyRouter.get("/company-data/:companyId", isAuth_1.jwtAuth, companyControlle
 companyRouter.post("/create-company", isAuth_1.jwtAuth, companyController_1.createCompany);
 companyRouter.patch("/update-company/:id", isAuth_1.jwtAuth, companyController_1.updateCompany);
 companyRouter.delete("/delete-company/:companyId", isAuth_1.jwtAuth, companyController_1.deleteCompany);
+companyRouter.post("/add-amc", isAuth_1.jwtAuth, companyController_1.amcCall);
 exports.default = companyRouter;
