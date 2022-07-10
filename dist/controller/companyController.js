@@ -141,12 +141,12 @@ const amcCall = (_req, res) => {
     companyModel_1.companyModel.find({}).then((result) => {
         const day = new Date().getDay();
         const date = new Date();
-        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-        const week = Math.ceil((new Date().getDate() + new Date(firstDay).getDay()) / 7);
+        const week = Math.ceil(new Date().getDate() / 7);
         const findAmc = result.filter((value) => value.amc.maintain === true &&
-            value.amc.day === day &&
-            (value.amc.week === week || value.amc.week === 0));
-        const amcDate = [];
+            (value.amc.day === -1 ||
+                (value.amc.day === day &&
+                    (value.amc.week === week || value.amc.week === 0))));
+        const amcData = [];
         findAmc.forEach((company) => {
             const data = {
                 streetAddress: company.streetAddress,
@@ -167,9 +167,9 @@ const amcCall = (_req, res) => {
                 actions: [],
                 registeredBy: "62756f81f05f1f54d235158f",
             };
-            amcDate.push(data);
+            amcData.push(data);
         });
-        (0, callController_1.createAmcCalls)(res, amcDate);
+        (0, callController_1.createAmcCalls)(res, amcData);
     });
 };
 exports.amcCall = amcCall;
