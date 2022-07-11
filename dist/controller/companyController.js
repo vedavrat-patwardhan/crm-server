@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.amcCall = exports.deleteCompany = exports.updateCompany = exports.createCompany = exports.getCompanyData = exports.getCompanyList = exports.getCompanies = void 0;
 const express_validator_1 = require("express-validator");
+const mongoose_1 = __importDefault(require("mongoose"));
 const companyModel_1 = require("../model/companyModel");
 const callController_1 = require("./callController");
 const getCompanies = (req, res) => {
@@ -158,14 +162,14 @@ const amcCall = (_req, res) => {
                 customerName: company.contactPerson[0].name,
                 email: company.contactPerson[0].email,
                 mobile: company.contactPerson[0].mobile,
-                assignedEmployeeId: company.amc.employee,
+                assignedEmployeeId: new mongoose_1.default.Types.ObjectId(company.amc.employee),
                 callStatus: "In progress",
                 startDate: new Date().getTime(),
                 startAction: new Date().toLocaleString().split(",")[0],
                 problemType: "AMC Call",
                 expClosure: date.setDate(date.getDate() + 1),
                 actions: [],
-                registeredBy: "62756f81f05f1f54d235158f",
+                registeredBy: new mongoose_1.default.Types.ObjectId("62756f81f05f1f54d235158f"),
             };
             amcData.push(data);
         });
