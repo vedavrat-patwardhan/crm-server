@@ -8,7 +8,7 @@ const actionSchema = new mongoose_1.Schema({
     actionTaken: { type: String, required: true },
     actionStarted: { type: Number, required: true },
     employee: { type: mongoose_1.Schema.Types.ObjectId, ref: signupModel_1.signupModel, required: true },
-});
+}, { _id: false });
 const callSchema = new mongoose_1.Schema({
     id: { type: Number, required: true, unique: true },
     streetAddress: { type: String, required: true },
