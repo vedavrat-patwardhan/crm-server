@@ -4,7 +4,8 @@
   "description": "backend for logic crm",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./dist/app.js",
+    "build": "tsc"
   },
   "author": "Vedavrat P. Patwardhan <vedavratpp@gmail.com>",
   "license": "ISC",
