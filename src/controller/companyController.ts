@@ -1,6 +1,6 @@
 import { RequestHandler, Response } from "express";
 import { validationResult } from "express-validator";
-import mongoose, { Types } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { CompanyInterface } from "../config/interfaces";
 import { callModel } from "../model/callModel";
 import { companyModel } from "../model/companyModel";
@@ -154,30 +154,44 @@ export const deleteCompany: RequestHandler = (req, res) => {
 };
 
 export const amcCall: RequestHandler = (_req, res) => {
-  companyModel.find({}).then((result: CompanyInterface[]) => {
+  companyModel.find({ hasAmc: true }).then((result: CompanyInterface[]) => {
     const day = new Date().getDay();
     const date = new Date();
     const week = Math.ceil(new Date().getDate() / 7);
-    const findAmc = result.filter(
-      (value) =>
-        value.amc.maintain === true &&
-        (value.amc.day === -1 ||
-          (value.amc.day === day &&
-            (value.amc.week === week || value.amc.week === 0)))
-    );
-    const amcData: any[] = [];
-    findAmc.forEach((company) => {
+    const amcCalls: any[] = [];
+    const filteredAmc: {
+      companyDetails: CompanyInterface;
+      amcDetails: {
+        week: number;
+        day: number;
+        employee: Schema.Types.ObjectId;
+      };
+    }[] = [];
+    result.forEach((value) => {
+      //@ts-ignore
+      value.amc.forEach((item) => {
+        if (
+          item.day === -1 ||
+          (item.day === day && (item.week === week || item.week === 0))
+        ) {
+          filteredAmc.push({ companyDetails: value, amcDetails: item });
+        }
+      });
+    });
+    filteredAmc.forEach((amcData) => {
+      const { streetAddress, city, state, pincode, _id, contactPerson } =
+        amcData.companyDetails;
       const data = {
-        streetAddress: company.streetAddress,
-        city: company.city,
-        state: company.state,
-        pincode: company.pincode,
+        streetAddress: streetAddress,
+        city: city,
+        state: state,
+        pincode: pincode,
         callDescription: "AMC Call",
-        companyName: company._id,
-        customerName: company.contactPerson[0].name,
-        email: company.contactPerson[0].email,
-        mobile: company.contactPerson[0].mobile,
-        assignedEmployeeId: new mongoose.Types.ObjectId(company.amc.employee),
+        companyName: _id,
+        customerName: contactPerson[0].name,
+        email: contactPerson[0].email,
+        mobile: contactPerson[0].mobile,
+        assignedEmployeeId: amcData.amcDetails.employee,
         callStatus: "In progress",
         startDate: new Date().getTime(),
         startAction: new Date().toLocaleString().split(",")[0],
@@ -186,9 +200,9 @@ export const amcCall: RequestHandler = (_req, res) => {
         actions: [],
         registeredBy: new mongoose.Types.ObjectId("62756f81f05f1f54d235158f"),
       };
-      amcData.push(data);
+      amcCalls.push(data);
     });
-    createAmcCalls(res, amcData);
+    createAmcCalls(res, amcCalls);
   });
 };
 // export const addData: RequestHandler = (req, res) => {

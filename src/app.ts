@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import router from "./api/routes";
+import { schedule } from "node-cron";
 const port = process.env.PORT || 5000;
 
 dotenv.config();
@@ -23,6 +24,10 @@ app.all("/*", (_req: Request, res: Response, next: NextFunction) => {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
+// schedule("* * * * *", () => {
+//   console.log("running a task every minute");
+// });
 
 app.use(router);
 app.use("/", (req, res) => res.json("404 not found"));

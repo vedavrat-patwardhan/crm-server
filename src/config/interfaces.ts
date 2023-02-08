@@ -1,3 +1,5 @@
+import { Schema } from "mongoose";
+
 export interface CompanyInterface {
   _id?: string;
   name: string;
@@ -6,7 +8,8 @@ export interface CompanyInterface {
   city: string;
   state: string;
   pincode: number;
-  amc: { maintain: boolean; week?: number; day?: number; employee?: string };
+  hasAmc: boolean;
+  amc?: { week: number; day: number; employee: Schema.Types.ObjectId }[];
   weeklyOff?: string[];
 }
 

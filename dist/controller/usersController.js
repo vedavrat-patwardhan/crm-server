@@ -100,12 +100,12 @@ const deleteUser = (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
-    signupModel_1.signupModel.findByIdAndDelete(req.params.id, (err, result) => {
+    signupModel_1.signupModel.findByIdAndUpdate(req.params.id, { isActive: true }, (err, result) => {
         if (err) {
             return res.status(400).json(err);
         }
         else if (result) {
-            res.status(202).json("User Deleted");
+            res.status(202).json("User Disabled");
         }
         else {
             res.status(404).json("No user with this id is present");

@@ -9,5 +9,6 @@ const signupSchema = new mongoose_1.Schema({
     dob: String,
     mobileNo: { type: [String], required: true },
     auth: { type: String, required: true },
+    isActive: { type: Boolean, default: true },
 });
 exports.signupModel = (0, mongoose_1.model)("user", signupSchema);

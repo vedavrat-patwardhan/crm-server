@@ -19,6 +19,7 @@ companyRouter.post("/create-company", jwtAuth, createCompany);
 companyRouter.patch("/update-company/:id", jwtAuth, updateCompany);
 companyRouter.delete("/delete-company/:companyId", jwtAuth, deleteCompany);
 companyRouter.post("/add-amc", jwtAuth, amcCall);
+companyRouter.post("/add-amc-cron", amcCall);
 // companyRouter.post("/add-data", addData);
 
 export default companyRouter;

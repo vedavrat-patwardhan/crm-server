@@ -97,10 +97,10 @@ const getCalls = (req, res) => {
                 getCall({ assignedEmployeeId: id }, filterData);
                 break;
             case "admin":
-                getCall({ problemType: { $nin: ["Quotation", "Lead"] } }, filterData);
+                getCall({ isSales: false }, filterData);
                 break;
             case "sales admin":
-                getCall({ problemType: { $in: ["Quotation", "Lead"] } }, filterData);
+                getCall({ isSales: true }, filterData);
                 break;
             default:
                 res.status(400).json("Invalid auth");

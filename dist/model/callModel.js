@@ -40,5 +40,6 @@ const callSchema = new mongoose_1.Schema({
     problemType: { type: String, required: true },
     expClosure: { type: Number, required: true },
     actions: [actionSchema],
+    isSales: { type: Boolean, required: true, default: false },
 });
 exports.callModel = (0, mongoose_1.model)("call", callSchema);

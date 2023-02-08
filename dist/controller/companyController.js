@@ -142,27 +142,33 @@ const deleteCompany = (req, res) => {
 };
 exports.deleteCompany = deleteCompany;
 const amcCall = (_req, res) => {
-    companyModel_1.companyModel.find({}).then((result) => {
+    companyModel_1.companyModel.find({ hasAmc: true }).then((result) => {
         const day = new Date().getDay();
         const date = new Date();
         const week = Math.ceil(new Date().getDate() / 7);
-        const findAmc = result.filter((value) => value.amc.maintain === true &&
-            (value.amc.day === -1 ||
-                (value.amc.day === day &&
-                    (value.amc.week === week || value.amc.week === 0))));
-        const amcData = [];
-        findAmc.forEach((company) => {
+        const amcCalls = [];
+        const filteredAmc = [];
+        result.forEach((value) => {
+            value.amc.forEach((item) => {
+                if (item.day === -1 ||
+                    (item.day === day && (item.week === week || item.week === 0))) {
+                    filteredAmc.push({ companyDetails: value, amcDetails: item });
+                }
+            });
+        });
+        filteredAmc.forEach((amcData) => {
+            const { streetAddress, city, state, pincode, _id, contactPerson } = amcData.companyDetails;
             const data = {
-                streetAddress: company.streetAddress,
-                city: company.city,
-                state: company.state,
-                pincode: company.pincode,
+                streetAddress: streetAddress,
+                city: city,
+                state: state,
+                pincode: pincode,
                 callDescription: "AMC Call",
-                companyName: company._id,
-                customerName: company.contactPerson[0].name,
-                email: company.contactPerson[0].email,
-                mobile: company.contactPerson[0].mobile,
-                assignedEmployeeId: new mongoose_1.default.Types.ObjectId(company.amc.employee),
+                companyName: _id,
+                customerName: contactPerson[0].name,
+                email: contactPerson[0].email,
+                mobile: contactPerson[0].mobile,
+                assignedEmployeeId: amcData.amcDetails.employee,
                 callStatus: "In progress",
                 startDate: new Date().getTime(),
                 startAction: new Date().toLocaleString().split(",")[0],
@@ -171,9 +177,9 @@ const amcCall = (_req, res) => {
                 actions: [],
                 registeredBy: new mongoose_1.default.Types.ObjectId("62756f81f05f1f54d235158f"),
             };
-            amcData.push(data);
+            amcCalls.push(data);
         });
-        (0, callController_1.createAmcCalls)(res, amcData);
+        (0, callController_1.createAmcCalls)(res, amcCalls);
     });
 };
 exports.amcCall = amcCall;

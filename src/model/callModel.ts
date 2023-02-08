@@ -42,6 +42,7 @@ const callSchema = new Schema({
   problemType: { type: String, required: true }, //TODO: Add this as ref to problemType schema
   expClosure: { type: Number, required: true },
   actions: [actionSchema],
+  isSales: { type: Boolean, required: true, default: false },
 });
 
 export const callModel = model("call", callSchema);

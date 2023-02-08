@@ -107,13 +107,14 @@ export const deleteUser: RequestHandler = (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  signupModel.findByIdAndDelete(
+  signupModel.findByIdAndUpdate(
     req.params.id,
+    { isActive: true },
     (err: any, result: SignupInterface) => {
       if (err) {
         return res.status(400).json(err);
       } else if (result) {
-        res.status(202).json("User Deleted");
+        res.status(202).json("User Disabled");
       } else {
         res.status(404).json("No user with this id is present");
       }
