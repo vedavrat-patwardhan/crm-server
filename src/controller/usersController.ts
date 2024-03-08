@@ -108,7 +108,6 @@ export const deleteUser: RequestHandler = (req, res) => {
     return res.status(422).json({ errors: errors.array() });
   }
   signupModel.findByIdAndUpdate(
-  signupModel.findByIdAndUpdate(
     req.params.id,
     { disabled: true },
     (err: any, result: SignupInterface) => {

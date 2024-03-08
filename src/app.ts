@@ -5,11 +5,11 @@ import dotenv from "dotenv";
 import router from "./api/routes";
 dotenv.config();
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT ?? 5000;
 
 mongoose.Promise = global.Promise;
 //@ts-ignore:next-line
-mongoose.connect(process.env.MONGO_URI || process.env.mongodbUri, {
+mongoose.connect(process.env.MONGO_URI ?? process.env.mongodbUri, {
   //For mongoDB connection
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,10 +24,6 @@ app.all("/*", (_req: Request, res: Response, next: NextFunction) => {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
-
-// schedule("* * * * *", () => {
-//   console.log("running a task every minute");
-// });
 
 app.use(router);
 app.use("/", (req, res) => res.json("404 not found"));
