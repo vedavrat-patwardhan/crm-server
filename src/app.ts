@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import router from "./api/routes";
-import { schedule } from "node-cron";
+dotenv.config();
+
 const port = process.env.PORT || 5000;
 
-dotenv.config();
 mongoose.Promise = global.Promise;
 //@ts-ignore:next-line
 mongoose.connect(process.env.MONGO_URI || process.env.mongodbUri, {

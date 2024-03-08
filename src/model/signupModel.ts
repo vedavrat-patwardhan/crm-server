@@ -7,7 +7,7 @@ const signupSchema = new Schema({
   dob: String,
   mobileNo: { type: [String], required: true },
   auth: { type: String, required: true },
-  isActive: { type: Boolean, default: true },
+  disabled: { type: Boolean, default: false },
 });
 
 export const signupModel = model("user", signupSchema);

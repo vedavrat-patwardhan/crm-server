@@ -50,14 +50,14 @@ export const updateUser: RequestHandler = (req, res) => {
 export const getUserData: RequestHandler = (req, res) => {
   let { page, itemsPerPage } = req.params;
   let { search } = req.query;
-  search = search || "";
+  search = search ?? "";
   let usersCounter = 0;
   if (isNaN(+page)) {
     return res.status(403).json("Invalid page number");
   }
   if (search) {
     signupModel
-      .find({})
+      .find({ disabled: false })
       .sort({ name: 1 })
       .then((users: SignupInterface[]) => {
         usersCounter = users.length;
@@ -77,12 +77,12 @@ export const getUserData: RequestHandler = (req, res) => {
       });
   } else {
     signupModel
-      .find()
+      .find({ disabled: false })
       .count()
       .then((usersCount: number) => {
         usersCounter = usersCount;
         return signupModel
-          .find({}, { password: 0 })
+          .find({ disabled: false }, { password: 0 })
           .skip((+page - 1) * +itemsPerPage)
           .limit(+itemsPerPage);
       })
@@ -95,7 +95,7 @@ export const getUserData: RequestHandler = (req, res) => {
 
 export const getUserList: RequestHandler = (_req, res) => {
   signupModel
-    .find({}, { name: 1 })
+    .find({ disabled: false }, { name: 1 })
     .then((foundList: { _id: string; name: string }[]) =>
       res.status(200).json(foundList)
     )
@@ -108,8 +108,9 @@ export const deleteUser: RequestHandler = (req, res) => {
     return res.status(422).json({ errors: errors.array() });
   }
   signupModel.findByIdAndUpdate(
+  signupModel.findByIdAndUpdate(
     req.params.id,
-    { isActive: true },
+    { disabled: true },
     (err: any, result: SignupInterface) => {
       if (err) {
         return res.status(400).json(err);

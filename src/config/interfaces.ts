@@ -21,6 +21,7 @@ export interface SignupInterface {
   dob: string;
   mobileNo: string[];
   auth: string;
+  disabled: boolean;
 }
 
 export interface CallInterface {

@@ -80,9 +80,12 @@ const login = (req, res) => {
     const { email, password } = req.body;
     signupModel_1.signupModel.findOne({ email }, (err, foundUser) => {
         if (err) {
-            res.status(400).json(err);
+            return res.status(400).json(err);
         }
-        else if (foundUser) {
+        if (foundUser === null || foundUser === void 0 ? void 0 : foundUser.disabled) {
+            return res.status(401).json({ email: "This user is disabled" });
+        }
+        if (foundUser) {
             bcrypt_1.default.compare(password, foundUser.password, (_err2, result) => {
                 if (result) {
                     const token = jwt.sign({

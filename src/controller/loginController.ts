@@ -56,8 +56,12 @@ export const login: RequestHandler = (req, res) => {
   const { email, password } = req.body;
   signupModel.findOne({ email }, (err: any, foundUser: SignupInterface) => {
     if (err) {
-      res.status(400).json(err);
-    } else if (foundUser) {
+      return res.status(400).json(err);
+    }
+    if (foundUser?.disabled) {
+      return res.status(401).json({ email: "This user is disabled" });
+    }
+    if (foundUser) {
       bcrypt.compare(password, foundUser.password, (_err2, result) => {
         if (result) {
           const token = jwt.sign(

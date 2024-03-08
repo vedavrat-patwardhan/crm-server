@@ -8,8 +8,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const routes_1 = __importDefault(require("./api/routes"));
-const port = process.env.PORT || 5000;
 dotenv_1.default.config();
+const port = process.env.PORT || 5000;
 mongoose_1.default.Promise = global.Promise;
 mongoose_1.default.connect(process.env.MONGO_URI || process.env.mongodbUri, {
     useNewUrlParser: true,
