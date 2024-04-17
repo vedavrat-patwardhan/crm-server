@@ -2,6 +2,7 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -9,9 +10,9 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const routes_1 = __importDefault(require("./api/routes"));
 dotenv_1.default.config();
-const port = process.env.PORT || 5000;
+const port = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 5000;
 mongoose_1.default.Promise = global.Promise;
-mongoose_1.default.connect(process.env.MONGO_URI || process.env.mongodbUri, {
+mongoose_1.default.connect((_b = process.env.MONGO_URI) !== null && _b !== void 0 ? _b : process.env.mongodbUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
