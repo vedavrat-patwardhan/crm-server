@@ -3,15 +3,18 @@ import { callModel } from "../model/callModel";
 
 export const getCallDetails: RequestHandler = async (req, res) => {
   const { fromTime, toTime } = req.query;
-  const fromTimeInSec = new Date(fromTime as string).getTime();
-  const toTimeInSec = new Date(toTime as string).getTime();
 
+  if (!fromTime || !toTime) {
+    return res.status(400).json({
+      message: "Please provide a valid fromTime and toTime",
+    });
+  }
   // Query the database
   const calls = await callModel
     .find({
       startDate: {
-        $gte: fromTimeInSec,
-        $lte: toTimeInSec,
+        $gte: +fromTime,
+        $lte: +toTime,
       },
     })
     .populate("companyName", "name")
