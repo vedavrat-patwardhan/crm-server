@@ -175,6 +175,7 @@ const amcCall = (_req, res) => {
                 problemType: "AMC Call",
                 expClosure: date.setDate(date.getDate() + 1),
                 actions: [],
+                isSales: false,
                 registeredBy: new mongoose_1.default.Types.ObjectId("62756f81f05f1f54d235158f"),
             };
             amcCalls.push(data);

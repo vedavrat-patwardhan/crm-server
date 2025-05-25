@@ -1,8 +1,7 @@
-import { RequestHandler, Response } from "express";
+import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { CompanyInterface } from "../config/interfaces";
-import { callModel } from "../model/callModel";
 import { companyModel } from "../model/companyModel";
 import { createAmcCalls } from "./callController";
 
@@ -198,6 +197,7 @@ export const amcCall: RequestHandler = (_req, res) => {
         problemType: "AMC Call",
         expClosure: date.setDate(date.getDate() + 1),
         actions: [],
+        isSales: false,
         registeredBy: new mongoose.Types.ObjectId("62756f81f05f1f54d235158f"),
       };
       amcCalls.push(data);
